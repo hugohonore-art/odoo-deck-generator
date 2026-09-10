@@ -1044,20 +1044,19 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
   function currency() { return ratesFor(grille()).currency; }
   function money(v) { return DeckCore._money(v, currency(), deckLang()); }
   function clampLic(Y, v) { var cap = CAPS[Y] || 0; v = parseFloat(v); if (isNaN(v)) v = 0; return Math.max(0, Math.min(v, cap)); }
-  function clampPack(v) { v = parseFloat(v); if (isNaN(v)) v = 15; return Math.max(0, Math.min(30, v)); }
+  function clampPack(v) { v = parseFloat(v); if (isNaN(v)) v = 0; return Math.max(0, Math.min(30, v)); }
 
   // ---------- durées ----------
   function renderDurbox() {
     var box = gv("durbox"), t = T(), html = "";
     for (var Y = 1; Y <= 5; Y++) {
-      var checked = (Y === 3 || Y === 5) ? "checked" : "";
       if (Y === 1) {
         html += '<div class="durline" data-y="1"><div class="chk"><input type="checkbox" class="dur" value="1"> ' + t.dur_an1 + '</div>'
           + '<div style="grid-column:2/4"><small>' + t.dur_norem + '</small></div></div>';
       } else {
-        html += '<div class="durline" data-y="' + Y + '"><div class="chk"><input type="checkbox" class="dur" value="' + Y + '" ' + checked + '> ' + Y + ' ' + t.dur_ans + '</div>'
-          + '<div><small>' + t.dur_remlic + '</small><input type="number" class="dlic" data-y="' + Y + '" min="0" step="1" value="' + (CAPS[Y]) + '"></div>'
-          + '<div><small>' + t.dur_rempack + '</small><input type="number" class="dpack" data-y="' + Y + '" min="0" max="30" step="5" value="15"></div></div>';
+        html += '<div class="durline" data-y="' + Y + '"><div class="chk"><input type="checkbox" class="dur" value="' + Y + '"> ' + Y + ' ' + t.dur_ans + '</div>'
+          + '<div><small>' + t.dur_remlic + '</small><input type="number" class="dlic" data-y="' + Y + '" min="0" step="1" value="0"></div>'
+          + '<div><small>' + t.dur_rempack + '</small><input type="number" class="dpack" data-y="' + Y + '" min="0" max="30" step="5" value="0"></div></div>';
       }
     }
     box.innerHTML = html;
@@ -1090,9 +1089,9 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
     var hrs = gv("hours").value;
     if (hrs === "custom") p.pack = { custom: true };
     else if (hrs !== "none") {
-      p.pack = { hours: parseInt(hrs), discount: 15 };
+      p.pack = { hours: parseInt(hrs), discount: 0 };
       var by = {}, any = false;
-      durs.forEach(function (Y) { if (Y > 1) { var d = clampPack(discPack(Y)); if (d !== 15) { by[String(Y)] = d; any = true; } } });
+      durs.forEach(function (Y) { if (Y > 1) { var d = clampPack(discPack(Y)); if (d !== 0) { by[String(Y)] = d; any = true; } } });
       if (any) p.pack.discountByYear = by;
     }
     if (gv("oshEnable").checked) p.odoosh = { gb: parseFloat(gv("oshgb").value) || 0, staging: parseFloat(gv("oshstaging").value) || 0, workers: parseFloat(gv("oshworkers").value) || 0 };
