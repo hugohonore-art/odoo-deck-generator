@@ -148,8 +148,12 @@
         <option value="25">25 h</option><option value="50">50 h</option><option value="75">75 h</option>
         <option value="100">100 h</option><option value="125">125 h</option><option value="150">150 h</option>
         <option value="175">175 h</option><option value="200" selected>200 h (Pro)</option>
-        <option value="custom" data-i18n="opt_pack_custom">Projet custom (> 200 h, sur devis)</option>
+        <option value="custom" data-i18n="opt_pack_custom">Plus de 200 h (à préciser)</option>
       </select>
+      <div class="sub" id="customHoursWrap" hidden style="margin-top:10px">
+        <label data-i18n="f_customhours">Volume d'heures (> 200)</label>
+        <input type="number" id="customHours" min="225" step="25" value="250">
+      </div>
     </div>
 
     <div class="grp">
@@ -259,7 +263,7 @@ const GRILLES = {
   },
 };
 // Remises identiques sur toutes les grilles
-const CAPS = { 1: 0, 2: 5, 3: 10, 4: 12, 5: 15 };
+const CAPS = { 1: 0, 2: 5, 3: 10, 4: 12.5, 5: 15 };
 
 // Construit l'objet `rates` injecte dans pricing pour une grille donnee.
 function ratesFor(code) {
@@ -286,7 +290,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
   };
   const FONT = "Inter";
   const W = 13.333, H = 7.5, MX = 0.7;
-  const CAPS = { 1: 0, 2: 5, 3: 10, 4: 12, 5: 15 };
+  const CAPS = { 1: 0, 2: 5, 3: 10, 4: 12.5, 5: 15 };
   const UL = { teal: "marqueur-teal", yellow: "marqueur-jaune", coral: "marqueur-corail", blue: "marqueur-bleu" };
   const WORDS = {
     fr: ["zéro", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf", "dix"],
@@ -300,6 +304,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       coverSub: "Récapitulatif du besoin & objectifs de la démonstration",
       coverPrep: (n) => n ? "Préparé par " + n + " · Odoo" : "Odoo",
       whoIs: (c) => "Qui est " + c + " ?",
+      needTitle: (c) => "Le besoin de " + c,
       todayTools: (n) => "Aujourd'hui : " + n + " outils qui ne se parlent pas",
       consequence: "Conséquence : ",
       frictions: "Les points de friction",
@@ -359,7 +364,10 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       transp: "pas de coûts cachés. Le pack est défini conjointement avec vos équipes et ajusté selon vos priorités métier.",
       projTitle: (d, p) => "Votre offre sur " + d + " an" + p,
       hDur: "Durée d'engagement", hLic: "Licences (période)", hImpl: "Implémentation",
-      hOsh: "Hébergement Odoo.sh", hCode: "Maintenance code", hTotal: "Total projet", hAnnual: "Équivalent annuel",
+      hOsh: "Hébergement Odoo.sh", hCode: "Maintenance code*", hTotal: "Total projet", hAnnual: "Équivalent annuel",
+      hTotalRec: "Total récurrent", hTotalProj: "Total projet",
+      implTitle: "Implémentation (Success Pack)", implOnce: "facturée une fois",
+      codeNote: (m) => "* Maintenance code : " + m + "/mois par 100 lignes, à titre indicatif, variable selon l'estimation et la mise en place réelle.",
       yLabel: (y, p) => y + " an" + p,
       capLic: "Licences : −20 % an 1 + remise pluriannuelle",
       capImpl: "Implémentation : pack remisé selon la durée (15 % par défaut, facturé une fois)",
@@ -367,7 +375,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       capCode: (r) => "Maintenance code = " + r + "/an par 100 lignes × durée",
       capAnnual: "Équivalent annuel = total projet / durée",
       multiTitle: "L'intérêt du pluriannuel",
-      frozen: ["Prix gelé", "Votre tarif licences est bloqué toute la durée du contrat, à l'abri des révisions Odoo (jusqu'à 7 %/an)."],
+      frozen: ["Prix gelé", "Votre tarif licences est bloqué pendant toute la durée du contrat. Au renouvellement, la hausse est plafonnée à +7 % par année de contrat."],
       multiDisc: ["Remise pluriannuelle", "Une remise supplémentaire s'applique sur les licences, dans les plafonds : jusqu'à −10 % à 3 ans, −15 % à 5 ans."],
       nextTitle: "Prochaines étapes",
       next: ["Validation de l'offre", "Signature du contrat", "Lancement du projet"],
@@ -377,6 +385,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       coverSub: "Needs recap & demo objectives",
       coverPrep: (n) => n ? "Prepared by " + n + " · Odoo" : "Odoo",
       whoIs: (c) => "Who is " + c + "?",
+      needTitle: (c) => "The need of " + c,
       todayTools: (n) => "Today: " + n + " tools that don't talk to each other",
       consequence: "Consequence: ",
       frictions: "The friction points",
@@ -436,7 +445,10 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       transp: "no hidden costs. The pack is defined together with your teams and adjusted to your business priorities.",
       projTitle: (d, p) => "Your offer over " + d + " year" + p,
       hDur: "Commitment term", hLic: "Licences (period)", hImpl: "Implementation",
-      hOsh: "Odoo.sh hosting", hCode: "Code maintenance", hTotal: "Project total", hAnnual: "Annual equivalent",
+      hOsh: "Odoo.sh hosting", hCode: "Code maintenance*", hTotal: "Project total", hAnnual: "Annual equivalent",
+      hTotalRec: "Recurring total", hTotalProj: "Project total",
+      implTitle: "Implementation (Success Pack)", implOnce: "billed once",
+      codeNote: (m) => "* Code maintenance: " + m + "/month per 100 lines, indicative, may vary with the estimate and the actual setup.",
       yLabel: (y, p) => y + " year" + p,
       capLic: "Licences: −20% year 1 + multi-year discount",
       capImpl: "Implementation: pack discounted by term (15% default, billed once)",
@@ -444,7 +456,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       capCode: (r) => "Code maintenance = " + r + "/yr per 100 lines × term",
       capAnnual: "Annual equivalent = project total / term",
       multiTitle: "The value of multi-year",
-      frozen: ["Frozen price", "Your licence rate is locked for the whole contract term, shielded from Odoo revisions (up to 7%/yr)."],
+      frozen: ["Frozen price", "Your licence rate is locked for the whole contract term. At renewal, any increase is capped at +7% per contract year."],
       multiDisc: ["Multi-year discount", "An extra discount applies on licences, within caps: up to −10% at 3 years, −15% at 5 years."],
       nextTitle: "Next steps",
       next: ["Offer validation", "Contract signature", "Project kickoff"],
@@ -454,6 +466,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       coverSub: "Samenvatting van de behoefte & doelstellingen van de demo",
       coverPrep: (n) => n ? "Voorbereid door " + n + " · Odoo" : "Odoo",
       whoIs: (c) => "Wie is " + c + "?",
+      needTitle: (c) => "De behoefte van " + c,
       todayTools: (n) => "Vandaag: " + n + " tools die niet met elkaar praten",
       consequence: "Gevolg: ",
       frictions: "De pijnpunten",
@@ -513,7 +526,10 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       transp: "geen verborgen kosten. Het pack wordt samen met uw teams bepaald en aangepast aan uw prioriteiten.",
       projTitle: (d, p) => "Uw aanbod over " + d + " jaar",
       hDur: "Looptijd", hLic: "Licenties (periode)", hImpl: "Implementatie",
-      hOsh: "Odoo.sh-hosting", hCode: "Code-onderhoud", hTotal: "Totaal project", hAnnual: "Jaarlijks equivalent",
+      hOsh: "Odoo.sh-hosting", hCode: "Code-onderhoud*", hTotal: "Totaal project", hAnnual: "Jaarlijks equivalent",
+      hTotalRec: "Terugkerend totaal", hTotalProj: "Totaal project",
+      implTitle: "Implementatie (Success Pack)", implOnce: "eenmalig gefactureerd",
+      codeNote: (m) => "* Code-onderhoud: " + m + "/maand per 100 regels, indicatief, kan variëren volgens de raming en de effectieve implementatie.",
       yLabel: (y, p) => y + " jaar",
       capLic: "Licenties: −20% jaar 1 + meerjarenkorting",
       capImpl: "Implementatie: pack met korting volgens looptijd (15% standaard, eenmalig gefactureerd)",
@@ -521,7 +537,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       capCode: (r) => "Code-onderhoud = " + r + "/jaar per 100 regels × looptijd",
       capAnnual: "Jaarlijks equivalent = totaal project / looptijd",
       multiTitle: "Het voordeel van meerjarig",
-      frozen: ["Vaste prijs", "Uw licentietarief ligt vast voor de hele looptijd, beschermd tegen Odoo-herzieningen (tot 7%/jaar)."],
+      frozen: ["Vaste prijs", "Uw licentietarief ligt vast voor de hele looptijd. Bij verlenging is de stijging beperkt tot +7% per contractjaar."],
       multiDisc: ["Meerjarenkorting", "Een extra korting geldt op de licenties, binnen de plafonds: tot −10% op 3 jaar, −15% op 5 jaar."],
       nextTitle: "Volgende stappen",
       next: ["Validatie van het aanbod", "Ondertekening van het contract", "Start van het project"],
@@ -560,17 +576,23 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
   function packCompose(hours, tiers) {
     if (hours == null) return [null, null];
     if (hours === 4) return [[tiers[0].name], tiers[0].ex];
-    if (hours === 200) return [[tiers[4].name], tiers[4].ex];
     let comp = [], full = 0, rem = hours;
+    while (rem >= 200) { comp.push(tiers[4].name); full += tiers[4].ex; rem -= 200; }
     [tiers[3], tiers[2], tiers[1]].forEach(function (t) { while (rem >= t.h) { comp.push(t.name); full += t.ex; rem -= t.h; } });
     return [comp, full];
+  }
+  // Base remisable : la remise ne s'applique qu'aux 200 premieres heures (1 bloc Pro).
+  function packDiscBase(hours, full, tiers) { return hours > 200 ? tiers[4].ex : full; }
+  function packApplyDisc(full, hours, tiers, disc) {
+    const base = packDiscBase(hours, full, tiers);
+    return base * (1 - disc / 100) + (full - base);
   }
   function packNet(pack, tiers) {
     if (!pack || pack.custom) return null;
     const hours = pack.hours; if (!hours) return null;
     const r = packCompose(hours, tiers); if (r[1] == null) return null;
     const disc = parseFloat(pack.discount != null ? pack.discount : 15);
-    return { hours: hours, composition: r[0], full: r[1], discount: disc, price: r[1] * (1 - disc / 100) };
+    return { hours: hours, composition: r[0], full: r[1], discount: disc, price: packApplyDisc(r[1], hours, tiers, disc) };
   }
   function packDiscFor(pack, year) {
     const base = parseFloat(pack.discount != null ? pack.discount : 15);
@@ -580,7 +602,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
   function packNetPrice(pack, year, tiers) {
     if (!pack || pack.custom) return null;
     const r = packCompose(pack.hours, tiers); if (r[1] == null) return null;
-    const disc = packDiscFor(pack, year); return { full: r[1], discount: disc, price: r[1] * (1 - disc / 100) };
+    const disc = packDiscFor(pack, year); return { full: r[1], discount: disc, price: packApplyDisc(r[1], pack.hours, tiers, disc) };
   }
   function oshAnnual(p) {
     const o = p.odoosh, r = p.rates || {}; if (!o) return 0;
@@ -663,7 +685,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
     // 2. Qui est
     (function () {
       const s = S(), h = mkHelpers(pptx, s, ASSETS);
-      h.header(t.whoIs(data.client || ""), "teal");
+      h.header(t.needTitle(data.client || ""), "teal");
       h.txt(data.couvrons || "", MX, 1.72, W - 2 * MX, 0.5, { size: 14, color: C.gray, italic: true });
       const lines = (data.pitch || "").split("\n").filter(Boolean).slice(0, 6);
       let by = 2.35;
@@ -703,7 +725,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
     function grid(titre, items, accent, check) {
       const s = S(), h = mkHelpers(pptx, s, ASSETS);
       h.header(titre, accent);
-      const lst = (items || []).slice(0, 6), rows = Math.ceil(lst.length / 2) || 1;
+      const lst = (items || []).slice(0, 8), rows = Math.ceil(lst.length / 2) || 1;
       const cw2 = (W - 2 * MX - gap) / 2, top = 2.0, chh = Math.min(1.55, (4.9 - (rows - 1) * gap) / rows);
       lst.forEach(function (it, i) {
         const c = i % 2, r = Math.floor(i / 2), x = MX + c * (cw2 + gap), y = top + r * (chh + gap);
@@ -714,7 +736,6 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       });
     }
     grid(t.frictions, data.frictions, "coral", false);
-    grid(t.besoins, data.besoins, "teal", true);
 
     // 6. Programme
     (function () {
@@ -849,45 +870,55 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       const plural = rows.some(function (r) { return r.Y > 1; }) ? "s" : "";
       h.header(t.projTitle(durTxt, plural), "yellow");
       const oshA = oshAnnual(pricing), hasOsh = oshA > 0, codeA = codeAnnual(pricing), hasCode = codeA > 0;
-      const headers = [t.hDur, t.hLic]; if (hasImpl) headers.push(t.hImpl); if (hasOsh) headers.push(t.hOsh); if (hasCode) headers.push(t.hCode);
-      headers.push(t.hTotal, t.hAnnual);
+      const info = hasImpl ? packNet(pack, tiers) : null;
+      // Tableau = recurrent + total projet ; le pack (une fois) est sorti dans une carte.
+      const headers = [t.hDur, t.hLic]; if (hasOsh) headers.push(t.hOsh); if (hasCode) headers.push(t.hCode);
+      headers.push(t.hTotalRec, t.hTotalProj);
       const ncols = headers.length, avail = W - 2 * MX;
-      const w0 = ncols >= 7 ? 2.0 : 2.35, rest = (avail - w0) / (ncols - 1), colW = [w0]; for (let k = 1; k < ncols; k++) colW.push(rest);
-      const hsize = ncols >= 7 ? 9.5 : (ncols >= 6 ? 10.5 : 11.5), vsize = ncols >= 7 ? 10.5 : (ncols >= 6 ? 11.5 : 12.5);
-      const totcol = ncols - 2;
+      const w0 = ncols >= 6 ? 1.9 : 2.2, rest = (avail - w0) / (ncols - 1), colW = [w0]; for (let k = 1; k < ncols; k++) colW.push(rest);
+      const hsize = ncols >= 6 ? 10 : 11, vsize = ncols >= 6 ? 11 : 12;
+      const projcol = ncols - 1, reccol = ncols - 2;
       const trows = [];
       trows.push(headers.map(function (htxt, j) {
         return { text: htxt, options: { fill: { color: C.line }, color: C.ink, bold: true, fontFace: FONT, fontSize: hsize, align: j === 0 ? "left" : "right", valign: "middle", margin: 3 } };
       }));
       rows.forEach(function (r, i) {
-        let label = t.yLabel(r.Y, r.Y > 1 ? "s" : ""); if (r.remisePct > 0) label += "  (−" + r.remisePct.toFixed(0) + "%)";
-        const vals = [label, eur(r.coutTotal)]; let total = r.coutTotal;
-        if (hasImpl) { const npk = packNetPrice(pack, r.Y, tiers); vals.push(eur(npk.price) + "  (−" + npk.discount.toFixed(0) + "%)"); total += npk.price; }
-        if (hasOsh) { vals.push(eur(oshA * r.Y)); total += oshA * r.Y; }
-        if (hasCode) { vals.push(eur(codeA * r.Y)); total += codeA * r.Y; }
-        vals.push(eur(total)); vals.push(eur(total / r.Y));
+        const licCell = eur(r.coutTotal) + (r.remisePct > 0 ? "  (−" + r.remisePct.toFixed(0) + "%)" : "");
+        const vals = [t.yLabel(r.Y, r.Y > 1 ? "s" : ""), licCell];
+        let rec = r.coutTotal;
+        if (hasOsh) { vals.push(eur(oshA * r.Y)); rec += oshA * r.Y; }
+        if (hasCode) { vals.push(eur(codeA * r.Y)); rec += codeA * r.Y; }
+        const packY = info ? packNetPrice(pack, r.Y, tiers).price : 0;
+        vals.push(eur(rec)); vals.push(eur(rec + packY));
         trows.push(vals.map(function (v, j) {
-          return { text: v, options: { fill: { color: i % 2 ? C.card : C.white }, color: j === totcol ? C.darkyellow : C.ink, bold: j === totcol, fontFace: FONT, fontSize: vsize, align: j === 0 ? "left" : "right", valign: "middle", margin: 3 } };
+          return { text: v, options: { fill: { color: i % 2 ? C.card : C.white }, color: j === projcol ? C.darkyellow : C.ink, bold: j === projcol || j === reccol, fontFace: FONT, fontSize: vsize, align: j === 0 ? "left" : "right", valign: "middle", margin: 3 } };
         }));
       });
       const nrows = rows.length + 1;
-      // Mise en page adaptative : la hauteur du tableau et le bloc du dessous
-      // se calculent selon le nombre de durees (2 a 5), sans chevauchement.
-      const rowH = Math.min(0.6, 2.5 / nrows), tableH = rowH * nrows;
+      const rowH = Math.min(0.58, 2.3 / nrows), tableH = rowH * nrows;
       s.addTable(trows, { x: MX, y: 1.95, w: avail, colW: colW, rowH: rowH, border: { type: "none" }, autoPage: false });
-      const cap = [t.capLic]; if (hasImpl) cap.push(t.capImpl); if (hasOsh) cap.push(t.capOsh); if (hasCode) cap.push(t.capCode(eur((pricing.rates || {}).codePer100 || 0))); cap.push(t.capAnnual);
+      const cap = [t.capLic]; if (hasImpl) cap.push(t.capImpl); if (hasOsh) cap.push(t.capOsh);
       const capY = 1.95 + tableH + 0.06;
-      h.txt(cap.join(" · ") + ".", MX, capY, W - 2 * MX, 0.5, { size: 11, color: C.gray, italic: true });
-      const titleY = capY + 0.52;
-      h.txt(t.multiTitle, MX, titleY, W - 2 * MX, 0.4, { size: 17, color: C.ink, bold: true });
-      const hasExtra = rows.some(function (r) { return r.remisePct > 0; });
-      const mc = [t.frozen]; if (hasExtra) mc.push(t.multiDisc);
-      const ncards = mc.length, mcw = ncards === 2 ? (W - 2 * MX - 0.3) / 2 : (W - 2 * MX);
-      const cardsY = titleY + 0.48, cardH = Math.max(1.2, Math.min(1.95, 7.2 - cardsY));
-      mc.forEach(function (m, i) {
+      h.txt(cap.join(" · ") + ".", MX, capY, W - 2 * MX, 0.4, { size: 11, color: C.gray, italic: true });
+      let noteY = capY + 0.34;
+      if (hasCode) { h.txt(t.codeNote(eur((pricing.rates || {}).codePer100 / 12)), MX, noteY, W - 2 * MX, 0.4, { size: 10.5, color: C.gray, italic: true }); noteY += 0.34; }
+      // Cartes : Implementation (une fois) + Prix gele
+      const cardsY = noteY + 0.14, cardH = Math.max(1.2, Math.min(1.95, 7.15 - cardsY));
+      const cards = [];
+      if (info) cards.push("impl");
+      cards.push("frozen");
+      const nc = cards.length, mcw = nc === 2 ? (W - 2 * MX - 0.3) / 2 : (W - 2 * MX);
+      cards.forEach(function (kind, i) {
         const x = MX + i * (mcw + 0.3); h.card(x, cardsY, mcw, cardH);
-        h.txt(m[0], x + 0.3, cardsY + 0.28, mcw - 0.6, 0.5, { size: 17, color: C.ink, bold: true });
-        h.txt(m[1], x + 0.3, cardsY + 0.82, mcw - 0.6, cardH - 0.95, { size: 13, color: C.gray });
+        if (kind === "impl") {
+          h.txt(t.implTitle, x + 0.3, cardsY + 0.22, mcw - 0.6, 0.35, { size: 13, color: C.darkyellow, bold: true });
+          h.txt(eur(info.price), x + 0.3, cardsY + 0.54, mcw - 0.6, 0.55, { size: 23, color: C.ink, bold: true });
+          h.txt(info.hours + " h · " + t.implOnce, x + 0.3, cardsY + 1.10, mcw - 0.6, 0.3, { size: 12, color: C.gray });
+          h.txt(t.fullPrice(eur(info.full)) + "  ·  −" + info.discount.toFixed(0) + "%", x + 0.3, cardsY + 1.40, mcw - 0.6, 0.3, { size: 11, color: C.gray, italic: true });
+        } else {
+          h.txt(t.frozen[0], x + 0.3, cardsY + 0.24, mcw - 0.6, 0.4, { size: 16, color: C.ink, bold: true });
+          h.txt(t.frozen[1], x + 0.3, cardsY + 0.72, mcw - 0.6, cardH - 0.85, { size: 12.5, color: C.gray });
+        }
       });
     })();
 
@@ -949,7 +980,10 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       f_users: "Nombre d'utilisateurs", ph_users: "ex. 20",
       f_base: "Prix licence /utilisateur/an", hint_base: "(auto, modifiable)",
       f_durations: "Durées d'engagement à projeter", hint_durations: "(coche + remises ; 1 an jamais auto)",
-      f_pack: "Pack d'implémentation (Success Pack)", opt_pack_none: "Aucun pack", opt_pack_custom: "Projet custom (> 200 h, sur devis)",
+      f_pack: "Pack d'implémentation (Success Pack)", opt_pack_none: "Aucun pack", opt_pack_custom: "Plus de 200 h (à préciser)",
+      f_customhours: "Volume d'heures (> 200)",
+      alert_pack: "Remise pack ≥ 25 % : voir team leader pour confirmation",
+      alert_pack_field: "≥ 25 % : voir team leader pour confirmation",
       f_osh: "Hébergement Odoo.sh", f_oshgb: "Stockage (Go)", f_oshstaging: "Branches staging", f_oshworkers: "Workers",
       f_code: "Maintenance code personnalisé", f_codelines: "Nombre de lignes de code",
       gen_num: "3", gen_title: "Générer",
@@ -1000,7 +1034,10 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       f_users: "Number of users", ph_users: "e.g. 20",
       f_base: "Licence price /user/year", hint_base: "(auto, editable)",
       f_durations: "Commitment terms to project", hint_durations: "(tick + discounts; 1 year never auto)",
-      f_pack: "Implementation pack (Success Pack)", opt_pack_none: "No pack", opt_pack_custom: "Custom project (> 200 h, on quote)",
+      f_pack: "Implementation pack (Success Pack)", opt_pack_none: "No pack", opt_pack_custom: "More than 200 h (specify)",
+      f_customhours: "Number of hours (> 200)",
+      alert_pack: "Pack discount ≥ 25%: check with team leader for confirmation",
+      alert_pack_field: "≥ 25%: check with team leader for confirmation",
       f_osh: "Odoo.sh hosting", f_oshgb: "Storage (GB)", f_oshstaging: "Staging branches", f_oshworkers: "Workers",
       f_code: "Custom code maintenance", f_codelines: "Number of code lines",
       gen_num: "3", gen_title: "Generate",
@@ -1055,14 +1092,36 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
           + '<div style="grid-column:2/4"><small>' + t.dur_norem + '</small></div></div>';
       } else {
         html += '<div class="durline" data-y="' + Y + '"><div class="chk"><input type="checkbox" class="dur" value="' + Y + '"> ' + Y + ' ' + t.dur_ans + '</div>'
-          + '<div><small>' + t.dur_remlic + '</small><input type="number" class="dlic" data-y="' + Y + '" min="0" step="1" value="0"></div>'
-          + '<div><small>' + t.dur_rempack + '</small><input type="number" class="dpack" data-y="' + Y + '" min="0" max="30" step="5" value="15"></div></div>';
+          + '<div><small>' + t.dur_remlic + ' (max ' + CAPS[Y] + ')</small><input type="number" class="dlic" data-y="' + Y + '" min="0" max="' + CAPS[Y] + '" step="1" value="0"></div>'
+          + '<div><small>' + t.dur_rempack + '</small><input type="number" class="dpack" data-y="' + Y + '" min="0" max="30" step="5" value="15">'
+          + '<div class="packwarn" data-y="' + Y + '" hidden style="color:#C0392B;font-size:10.5px;font-weight:600;margin-top:4px"></div></div></div>';
       }
     }
     box.innerHTML = html;
-    box.addEventListener("input", refresh);
-    box.addEventListener("change", function () { syncDurStyle(); refresh(); });
+    box.addEventListener("input", onDurInput);
+    box.addEventListener("change", function () { syncDurStyle(); updatePackWarn(); refresh(); });
     syncDurStyle();
+    updatePackWarn();
+  }
+  function onDurInput(e) {
+    var el = e && e.target;
+    if (el && el.classList && el.classList.contains("dlic")) {
+      var Y = parseInt(el.getAttribute("data-y")), cap = CAPS[Y] || 0;
+      if (parseFloat(el.value) > cap) el.value = cap;
+    }
+    updatePackWarn();
+    refresh();
+  }
+  function updatePackWarn() {
+    document.querySelectorAll(".dpack").forEach(function (inp) {
+      var Y = inp.getAttribute("data-y");
+      var w = document.querySelector('.packwarn[data-y="' + Y + '"]');
+      var chk = document.querySelector('.dur[value="' + Y + '"]');
+      if (!w || !chk) return;
+      var show = chk.checked && (parseFloat(inp.value) || 0) >= 25;
+      w.hidden = !show;
+      if (show) w.textContent = T().alert_pack_field;
+    });
   }
   function syncDurStyle() {
     document.querySelectorAll(".durline").forEach(function (row) {
@@ -1086,10 +1145,11 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
     var p = { grille: g, currency: rates.currency, lang: deckLang(), base: parseFloat(gv("base").value) || 0, nbUsers: parseInt(gv("users").value) || 0, rates: rates };
     var durs = durations(); p.durations = durs;
     var disc = {}; durs.forEach(function (Y) { if (Y > 1) disc[String(Y)] = clampLic(Y, discLic(Y)); }); p.discounts = disc;
-    var hrs = gv("hours").value;
-    if (hrs === "custom") p.pack = { custom: true };
-    else if (hrs !== "none") {
-      p.pack = { hours: parseInt(hrs), discount: 15 };
+    var hrs = gv("hours").value, packHours = null;
+    if (hrs === "custom") packHours = parseInt(gv("customHours").value) || 225;
+    else if (hrs !== "none") packHours = parseInt(hrs);
+    if (packHours) {
+      p.pack = { hours: packHours, discount: 15 };
       var by = {}, any = false;
       durs.forEach(function (Y) { if (Y > 1) { var d = clampPack(discPack(Y)); if (d !== 15) { by[String(Y)] = d; any = true; } } });
       if (any) p.pack.discountByYear = by;
@@ -1132,7 +1192,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
     heads.forEach(function (h) { html += "<th>" + h + "</th>"; });
     html += "</tr></thead><tbody>";
     rows.forEach(function (r) {
-      var total = r.coutTotal, cells = [(t.r_yrow(r.Y) + (r.remisePct > 0 ? " (−" + r.remisePct.toFixed(0) + "%)" : "")), money(r.coutTotal)];
+      var total = r.coutTotal, cells = [t.r_yrow(r.Y), money(r.coutTotal) + (r.remisePct > 0 ? " (−" + r.remisePct.toFixed(0) + "%)" : "")];
       if (hasImpl) { var d = packDiscFor(p.pack, r.Y), impl = pn.full * (1 - d / 100); cells.push(money(impl) + " (−" + d + "%)"); total += impl; }
       if (oshA > 0) { cells.push(money(oshA * r.Y)); total += oshA * r.Y; }
       if (codeA > 0) { cells.push(money(codeA * r.Y)); total += codeA * r.Y; }
@@ -1237,6 +1297,8 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
     gv("ltype").addEventListener("change", function () { setBase(); refresh(); });
     ["lang", "client", "users", "base", "hours"].forEach(function (id) { gv(id).addEventListener("input", refresh); gv(id).addEventListener("change", refresh); });
     ["vnom", "vtitre"].forEach(function (id) { gv(id).addEventListener("input", saveVendeur); });
+    gv("hours").addEventListener("change", function () { gv("customHoursWrap").hidden = this.value !== "custom"; });
+    gv("customHours").addEventListener("input", refresh);
     gv("oshEnable").addEventListener("change", function () { gv("oshFields").hidden = !this.checked; refresh(); });
     gv("codeEnable").addEventListener("change", function () { gv("codeFields").hidden = !this.checked; refresh(); });
     ["oshgb", "oshstaging", "oshworkers", "codelines"].forEach(function (id) { gv(id).addEventListener("input", refresh); });
