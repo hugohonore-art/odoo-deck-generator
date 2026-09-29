@@ -109,8 +109,7 @@
           <option value="en">English</option>
           <option value="nl">Nederlands</option>
         </select></div>
-      <div><label data-i18n="f_licence">Type de licence</label>
-        <select id="ltype"><option value="custom" data-i18n="opt_custom">Custom</option><option value="standard" data-i18n="opt_standard">Standard</option></select></div>
+      <div></div>
     </div>
 
     <div class="grp">
@@ -131,8 +130,19 @@
     <div class="divider"></div>
 
     <div class="row grp">
-      <div><label data-i18n="f_users">Nombre d'utilisateurs</label><input type="number" id="users" min="1" step="1" data-ph="ph_users" placeholder="ex. 20"></div>
-      <div><label><span data-i18n="f_base">Prix licence /utilisateur/an</span> <span class="hint" data-i18n="hint_base">(auto, modifiable)</span></label><input type="number" id="base" step="0.01"></div>
+      <div><label data-i18n="f_nbstd">Utilisateurs Standard</label><input type="number" id="nbStd" min="0" step="1" placeholder="0"></div>
+      <div><label data-i18n="f_stdprice">Prix Standard /an</label><input type="number" id="stdPrice" step="0.01"></div>
+    </div>
+    <div class="row grp">
+      <div><label data-i18n="f_nbcustom">Utilisateurs Custom</label><input type="number" id="nbCustom" min="0" step="1" placeholder="0"></div>
+      <div><label data-i18n="f_customprice">Prix Custom /an</label><input type="number" id="customPrice" step="0.01"></div>
+    </div>
+    <div class="grp">
+      <label class="toggle"><input type="checkbox" id="lightEnable"> <span data-i18n="f_light">Light users</span></label>
+      <div class="sub row" id="lightFields" hidden>
+        <div><label data-i18n="f_nblight">Nombre de light users</label><input type="number" id="nbLight" min="0" step="1" placeholder="0"></div>
+        <div><label data-i18n="f_lightprice">Prix light /mois (auto)</label><input type="number" id="lightPrice" step="0.01" readonly></div>
+      </div>
     </div>
 
     <div class="grp">
@@ -223,7 +233,7 @@ const GRILLES = {
       { name: "Personnalisé", h: 100, ex: 9900 },
       { name: "Pro", h: 200, ex: 19800 },
     ],
-    oshGb: 1.92, oshStaging: 144, oshWorker: 576, codePer100: 192,
+    oshGb: 1.92, oshStaging: 144, oshWorker: 576, codePer100: 192, light: 7.9,
   },
   EU_LOW: {
     label: "Europe LOW", currency: "EUR",
@@ -235,7 +245,7 @@ const GRILLES = {
       { name: "Personnalisé", h: 100, ex: 5400 },
       { name: "Pro", h: 200, ex: 10800 },
     ],
-    oshGb: 1.92, oshStaging: 144, oshWorker: 576, codePer100: 144,
+    oshGb: 1.92, oshStaging: 144, oshWorker: 576, codePer100: 144, light: 4.9,
   },
   AFRICA_LOW: {
     label: "Africa LOW", currency: "USD",
@@ -247,7 +257,7 @@ const GRILLES = {
       { name: "Personnalisé", h: 100, ex: 4000 },
       { name: "Pro", h: 200, ex: 8000 },
     ],
-    oshGb: 2.4, oshStaging: 172.8, oshWorker: 691.2, codePer100: 72,
+    oshGb: 2.4, oshStaging: 172.8, oshWorker: 691.2, codePer100: 72, light: 2.9,
   },
   UK: {
     label: "UK", currency: "GBP",
@@ -259,7 +269,7 @@ const GRILLES = {
       { name: "Personnalisé", h: 100, ex: 8670 },
       { name: "Pro", h: 200, ex: 17350 },
     ],
-    oshGb: 1.7, oshStaging: 132, oshWorker: 510, codePer100: 180,
+    oshGb: 1.7, oshStaging: 132, oshWorker: 510, codePer100: 180, light: 7.9,
   },
 };
 // Remises identiques sur toutes les grilles
@@ -271,6 +281,7 @@ function ratesFor(code) {
   return {
     tiers: g.tiers, oshGb: g.oshGb, oshStaging: g.oshStaging,
     oshWorker: g.oshWorker, codePer100: g.codePer100, currency: g.currency,
+    light: g.light, licence: g.licence,
   };
 }
 if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
@@ -342,7 +353,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       stepsAfter: "Mise en production progressive, module par module, pour sécuriser chaque étape.",
       licTitle: "Licences Odoo",
       annualContract: "CONTRAT ANNUEL",
-      perUser: "par utilisateur / par an · paiement anticipé",
+      perUser: "par utilisateur / par an · paiement anticipé", perUserShort: "/utilisateur/an",
       disc1yB: "−20 % ", disc1y: "la première année, appliqué sur les premiers utilisateurs commandés.",
       commit: "En vous engageant sur plusieurs années",
       commitBul: ["Prix gelé toute la durée du contrat", "À l'abri des révisions tarifaires"],
@@ -365,7 +376,15 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       projTitle: (d, p) => "Votre offre sur " + d + " an" + p,
       hDur: "Durée d'engagement", hLic: "Licences (période)", hImpl: "Implémentation",
       hOsh: "Hébergement Odoo.sh", hCode: "Maintenance code*", hTotal: "Total projet", hAnnual: "Équivalent annuel",
-      hTotalRec: "Total récurrent", hTotalProj: "Total projet",
+      hTotalRec: "Total récurrent", hTotalProj: "Total projet", hLight: "Light users",
+      lightNote: "Light user : accès limité (RH, présences, PoS, lecture Knowledge, scan code-barres), sans accès aux applications métier (Ventes, Achats, Projets, Comptabilité).",
+      lu_title: "Light users",
+      lu_intro: "Une licence économique pour les collaborateurs qui n'ont pas besoin d'un accès complet à Odoo.",
+      lu_inclTitle: "Ce qui est inclus (accès limité)",
+      lu_incl: ["RH & perso : profil, congés, notes de frais, cooptation, évaluations, présences", "Planning : consulter le planning, gérer sa feuille de travail", "Point de vente : se connecter comme employé en session PoS", "Knowledge : accès en lecture seule", "Logistique : scan de code-barres en entrepôt (sans création de produit ni gestion de stock)"],
+      lu_profTitle: "Deux profils possibles",
+      lu_prof: ["Employé sans accès : fiche RH uniquement, sans identifiants ni connexion", "Accès limité : strictement les fonctionnalités Employé essentielles"],
+      lu_restrictB: "Restrictions : ", lu_restrict: "aucun accès aux applications métier (Ventes, Achats, Projets, Comptabilité) ni aux fonctions avancées réservées aux licences pleines.",
       implTitle: "Implémentation (Success Pack)", implOnce: "facturée une fois",
       codeNote: (m) => "* Maintenance code : " + m + "/mois par 100 lignes, à titre indicatif, variable selon l'estimation et la mise en place réelle.",
       yLabel: (y, p) => y + " an" + p,
@@ -423,7 +442,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       stepsAfter: "Progressive go-live, module by module, to secure each step.",
       licTitle: "Odoo licences",
       annualContract: "ANNUAL CONTRACT",
-      perUser: "per user / per year · paid annually",
+      perUser: "per user / per year · paid annually", perUserShort: "/user/year",
       disc1yB: "−20% ", disc1y: "the first year, applied to the first users ordered.",
       commit: "By committing to several years",
       commitBul: ["Price frozen for the whole contract term", "Shielded from price revisions"],
@@ -446,7 +465,15 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       projTitle: (d, p) => "Your offer over " + d + " year" + p,
       hDur: "Commitment term", hLic: "Licences (period)", hImpl: "Implementation",
       hOsh: "Odoo.sh hosting", hCode: "Code maintenance*", hTotal: "Project total", hAnnual: "Annual equivalent",
-      hTotalRec: "Recurring total", hTotalProj: "Project total",
+      hTotalRec: "Recurring total", hTotalProj: "Project total", hLight: "Light users",
+      lightNote: "Light user: limited access (HR, attendance, PoS, read-only Knowledge, barcode scanning), no access to core business apps (Sales, Purchase, Projects, Accounting).",
+      lu_title: "Light users",
+      lu_intro: "A cost-effective licence for employees who don't need full access to Odoo.",
+      lu_inclTitle: "What's included (limited access)",
+      lu_incl: ["HR & personal: profile, time off, expenses, referrals, appraisals, attendance", "Planning: view the planning, manage the worksheet", "Point of Sale: connect as employee in a PoS session", "Knowledge: read-only access", "Logistics: barcode scanning in the warehouse (no product creation or inventory management)"],
+      lu_profTitle: "Two possible profiles",
+      lu_prof: ["Employee without access: HR record only, no credentials or login", "Limited access: strictly the essential Employee features"],
+      lu_restrictB: "Restrictions: ", lu_restrict: "no access to core business apps (Sales, Purchase, Projects, Accounting) or to advanced features reserved for full licences.",
       implTitle: "Implementation (Success Pack)", implOnce: "billed once",
       codeNote: (m) => "* Code maintenance: " + m + "/month per 100 lines, indicative, may vary with the estimate and the actual setup.",
       yLabel: (y, p) => y + " year" + p,
@@ -504,7 +531,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       stepsAfter: "Progressieve go-live, module per module, om elke stap te beveiligen.",
       licTitle: "Odoo-licenties",
       annualContract: "JAARCONTRACT",
-      perUser: "per gebruiker / per jaar · vooraf betaald",
+      perUser: "per gebruiker / per jaar · vooraf betaald", perUserShort: "/gebruiker/jaar",
       disc1yB: "−20% ", disc1y: "het eerste jaar, toegepast op de eerste bestelde gebruikers.",
       commit: "Bij een meerjarig engagement",
       commitBul: ["Prijs vast voor de hele looptijd van het contract", "Beschermd tegen prijsherzieningen"],
@@ -527,7 +554,15 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       projTitle: (d, p) => "Uw aanbod over " + d + " jaar",
       hDur: "Looptijd", hLic: "Licenties (periode)", hImpl: "Implementatie",
       hOsh: "Odoo.sh-hosting", hCode: "Code-onderhoud*", hTotal: "Totaal project", hAnnual: "Jaarlijks equivalent",
-      hTotalRec: "Terugkerend totaal", hTotalProj: "Totaal project",
+      hTotalRec: "Terugkerend totaal", hTotalProj: "Totaal project", hLight: "Light users",
+      lightNote: "Light user: beperkte toegang (HR, aanwezigheden, PoS, alleen-lezen Knowledge, barcodescanning), geen toegang tot de kernapplicaties (Verkoop, Aankoop, Projecten, Boekhouding).",
+      lu_title: "Light users",
+      lu_intro: "Een voordelige licentie voor medewerkers die geen volledige toegang tot Odoo nodig hebben.",
+      lu_inclTitle: "Wat is inbegrepen (beperkte toegang)",
+      lu_incl: ["HR & persoonlijk: profiel, verlof, onkosten, referrals, evaluaties, aanwezigheden", "Planning: planning bekijken, werkblad beheren", "Kassa (PoS): verbinden als werknemer in een PoS-sessie", "Knowledge: alleen-lezen toegang", "Logistiek: barcodescanning in het magazijn (geen productcreatie of voorraadbeheer)"],
+      lu_profTitle: "Twee mogelijke profielen",
+      lu_prof: ["Werknemer zonder toegang: enkel HR-fiche, geen inloggegevens", "Beperkte toegang: strikt de essentiële Werknemer-functies"],
+      lu_restrictB: "Beperkingen: ", lu_restrict: "geen toegang tot de kernapplicaties (Verkoop, Aankoop, Projecten, Boekhouding) of tot geavanceerde functies voorbehouden aan volledige licenties.",
       implTitle: "Implementatie (Success Pack)", implOnce: "eenmalig gefactureerd",
       codeNote: (m) => "* Code-onderhoud: " + m + "/maand per 100 regels, indicatief, kan variëren volgens de raming en de effectieve implementatie.",
       yLabel: (y, p) => y + " jaar",
@@ -564,7 +599,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
   }
   function clampDisc(Y, val) { const cap = CAPS[Y] || 0; let v = parseFloat(val); if (isNaN(v)) v = 0; return Math.max(0, Math.min(v, cap)); }
   function computeRows(p) {
-    const L0 = (parseFloat(p.base) || 0) * (parseFloat(p.nbUsers) || 0), out = [];
+    const L0 = (p.licenceAnnual != null ? parseFloat(p.licenceAnnual) : (parseFloat(p.base) || 0) * (parseFloat(p.nbUsers) || 0)) || 0, out = [];
     (p.durations || []).forEach(function (Y) {
       const raw = Y === 1 ? 0 : ((p.discounts || {})[String(Y)] != null ? (p.discounts || {})[String(Y)] : (p.discounts || {})[Y]);
       const remise = clampDisc(Y, raw || 0) / 100;
@@ -816,8 +851,21 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       const cardx = MX, cardw = 4.9;
       h.card(cardx, 1.9, cardw, 4.55, C.card, null, 0.04);
       h.txt(t.annualContract, cardx + 0.4, 2.2, cardw - 0.8, 0.35, { size: 12, color: C.gray, bold: true, spacing: 2 });
-      h.txt(eur(pricing.base || 0), cardx + 0.4, 2.6, cardw - 0.8, 0.9, { size: 40, color: C.ink, bold: true });
-      h.txt(t.perUser, cardx + 0.4, 3.5, cardw - 0.8, 0.4, { size: 13, color: C.gray });
+      const std = pricing.std || { n: 0 }, cust = pricing.custom || { n: 0 };
+      const types = [];
+      if (std.n > 0) types.push(["Standard", std.price, std.n]);
+      if (cust.n > 0) types.push(["Custom", cust.price, cust.n]);
+      if (types.length >= 2) {
+        types.forEach(function (ty, i) {
+          const yy = 2.58 + i * 0.72;
+          h.txt(ty[0] + " · " + ty[2] + " util.", cardx + 0.4, yy, cardw - 0.8, 0.3, { size: 12, color: C.gray, bold: true });
+          h.txt(eur(ty[1]) + " " + t.perUserShort, cardx + 0.4, yy + 0.26, cardw - 0.8, 0.4, { size: 22, color: C.ink, bold: true });
+        });
+      } else {
+        const price = types.length ? types[0][1] : (pricing.base || 0);
+        h.txt(eur(price), cardx + 0.4, 2.6, cardw - 0.8, 0.9, { size: 40, color: C.ink, bold: true });
+        h.txt(t.perUser, cardx + 0.4, 3.5, cardw - 0.8, 0.4, { size: 13, color: C.gray });
+      }
       h.shape(h.RR, cardx + 0.4, 3.95, cardw - 0.8, 0.75, { fill: C.white, line: C.yellow, lineW: 1.5, radius: 0.1 });
       h.runs([{ text: t.disc1yB, size: 15, color: C.darkyellow, bold: true }, { text: t.disc1y, size: 12, color: C.ink }], cardx + 0.6, 3.95, cardw - 1.0, 0.75, { anchor: "middle", lineMult: 1.1 });
       h.txt(t.commit, cardx + 0.4, 4.9, cardw - 0.8, 0.35, { size: 12, color: C.ink, bold: true });
@@ -834,6 +882,30 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
         h.txt(m[0], rx + 0.5, y, rw - 0.5, 0.35, { size: 14, color: C.ink, bold: true });
         h.txt(m[1], rx + 0.5, y + 0.34, rw - 0.5, 0.62, { size: 12, color: C.gray });
       });
+    })();
+
+    // 11 bis. Light users (uniquement si des light users sont renseignes)
+    (function () {
+      if (!(parseFloat(pricing.lightAnnual) > 0)) return;
+      const s = S(), h = mkHelpers(pptx, s, ASSETS);
+      h.header(t.lu_title, "teal");
+      h.txt(t.lu_intro, MX, 1.72, W - 2 * MX, 0.5, { size: 14, color: C.gray, italic: true });
+      const colW = (W - 2 * MX - 0.4) / 2, lx = MX, rx = MX + colW + 0.4;
+      h.txt(t.lu_inclTitle, lx, 2.32, colW, 0.35, { size: 15, color: C.ink, bold: true });
+      t.lu_incl.forEach(function (it, i) {
+        const y = 2.82 + i * 0.75;
+        h.checkBadge(lx, y, 0.4);
+        h.txt(it, lx + 0.58, y - 0.06, colW - 0.68, 0.72, { size: 12, color: C.gray });
+      });
+      h.txt(t.lu_profTitle, rx, 2.32, colW, 0.35, { size: 15, color: C.ink, bold: true });
+      t.lu_prof.forEach(function (it, i) {
+        const y = 2.86 + i * 0.9;
+        h.numBadge(rx, y, 0.44, i + 1, C.blue);
+        h.txt(it, rx + 0.6, y - 0.04, colW - 0.7, 0.85, { size: 12.5, color: C.ink });
+      });
+      const by = 4.95;
+      h.shape(h.RR, rx, by, colW, 1.55, { fill: C.pink, line: C.coral, radius: 0.08 });
+      h.runs([{ text: t.lu_restrictB, bold: true, color: C.darkred, size: 13 }, { text: t.lu_restrict, color: C.ink, size: 12.5 }], rx + 0.3, by, colW - 0.6, 1.55, { anchor: "middle" });
     })();
 
     // 12. Pack
@@ -870,9 +942,10 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       const plural = rows.some(function (r) { return r.Y > 1; }) ? "s" : "";
       h.header(t.projTitle(durTxt, plural), "yellow");
       const oshA = oshAnnual(pricing), hasOsh = oshA > 0, codeA = codeAnnual(pricing), hasCode = codeA > 0;
+      const lightA = parseFloat(pricing.lightAnnual) || 0, hasLight = lightA > 0;
       const info = hasImpl ? packNet(pack, tiers) : null;
       // Tableau = recurrent + total projet ; le pack (une fois) est sorti dans une carte.
-      const headers = [t.hDur, t.hLic]; if (hasOsh) headers.push(t.hOsh); if (hasCode) headers.push(t.hCode);
+      const headers = [t.hDur, t.hLic]; if (hasLight) headers.push(t.hLight); if (hasOsh) headers.push(t.hOsh); if (hasCode) headers.push(t.hCode);
       headers.push(t.hTotalRec, t.hTotalProj);
       const ncols = headers.length, avail = W - 2 * MX;
       const w0 = ncols >= 6 ? 1.9 : 2.2, rest = (avail - w0) / (ncols - 1), colW = [w0]; for (let k = 1; k < ncols; k++) colW.push(rest);
@@ -886,6 +959,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
         const licCell = eur(r.coutTotal) + (r.remisePct > 0 ? "  (−" + r.remisePct.toFixed(0) + "%)" : "");
         const vals = [t.yLabel(r.Y, r.Y > 1 ? "s" : ""), licCell];
         let rec = r.coutTotal;
+        if (hasLight) { vals.push(eur(lightA * r.Y)); rec += lightA * r.Y; }
         if (hasOsh) { vals.push(eur(oshA * r.Y)); rec += oshA * r.Y; }
         if (hasCode) { vals.push(eur(codeA * r.Y)); rec += codeA * r.Y; }
         const packY = info ? packNetPrice(pack, r.Y, tiers).price : 0;
@@ -901,7 +975,8 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       const capY = 1.95 + tableH + 0.06;
       h.txt(cap.join(" · ") + ".", MX, capY, W - 2 * MX, 0.4, { size: 11, color: C.gray, italic: true });
       let noteY = capY + 0.34;
-      if (hasCode) { h.txt(t.codeNote(eur((pricing.rates || {}).codePer100 / 12)), MX, noteY, W - 2 * MX, 0.4, { size: 10.5, color: C.gray, italic: true }); noteY += 0.34; }
+      if (hasCode) { h.txt(t.codeNote(eur((pricing.rates || {}).codePer100 / 12)), MX, noteY, W - 2 * MX, 0.4, { size: 10.5, color: C.gray, italic: true }); noteY += 0.30; }
+      if (hasLight) { h.txt(t.lightNote, MX, noteY, W - 2 * MX, 0.4, { size: 10.5, color: C.gray, italic: true }); noteY += 0.30; }
       // Cartes : Implementation (une fois) + Prix gele
       const cardsY = noteY + 0.14, cardH = Math.max(1.2, Math.min(1.95, 7.15 - cardsY));
       const cards = [];
@@ -1002,6 +1077,10 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       c_pack: function (h) { return "Pack " + h + " h"; }, c_nopack: "Sans pack", c_custompack: "Pack custom",
       c_osh: "Odoo.sh", c_code: function (n) { return "Maintenance " + n + " lignes"; },
       r_dur: "Durée", r_lic: "Licences", r_impl: "Impl.", r_osh: "Odoo.sh", r_maint: "Maint.", r_total: "Total", r_year: "/an",
+      r_light: "Light", r_rec: "Total récurrent", r_proj: "Total projet",
+      c_std: function (n) { return n + " Standard"; }, c_custom: function (n) { return n + " Custom"; }, c_light: function (n) { return n + " Light"; },
+      f_nbstd: "Utilisateurs Standard", f_stdprice: "Prix Standard /an", f_nbcustom: "Utilisateurs Custom", f_customprice: "Prix Custom /an",
+      f_light: "Light users", f_nblight: "Nombre de light users", f_lightprice: "Prix light /mois (auto)",
       r_yrow: function (y) { return y + " an" + (y > 1 ? "s" : ""); },
       recap_pack: function (h, p, full, d) { return "Pack " + h + " h : <b>" + p + "</b> <span class=\"hint\">(prix plein " + full + ", remise " + d + " %)</span>"; },
       recap_pack_custom: "Pack : <b>sur devis</b>", recap_nodur: "Sélectionne au moins une durée pour la projection.",
@@ -1056,6 +1135,10 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       c_pack: function (h) { return "Pack " + h + " h"; }, c_nopack: "No pack", c_custompack: "Custom pack",
       c_osh: "Odoo.sh", c_code: function (n) { return "Maintenance " + n + " lines"; },
       r_dur: "Term", r_lic: "Licences", r_impl: "Impl.", r_osh: "Odoo.sh", r_maint: "Maint.", r_total: "Total", r_year: "/yr",
+      r_light: "Light", r_rec: "Recurring total", r_proj: "Project total",
+      c_std: function (n) { return n + " Standard"; }, c_custom: function (n) { return n + " Custom"; }, c_light: function (n) { return n + " Light"; },
+      f_nbstd: "Standard users", f_stdprice: "Standard price /yr", f_nbcustom: "Custom users", f_customprice: "Custom price /yr",
+      f_light: "Light users", f_nblight: "Number of light users", f_lightprice: "Light price /month (auto)",
       r_yrow: function (y) { return y + " year" + (y > 1 ? "s" : ""); },
       recap_pack: function (h, p, full, d) { return "Pack " + h + " h: <b>" + p + "</b> <span class=\"hint\">(full price " + full + ", discount " + d + "%)</span>"; },
       recap_pack_custom: "Pack: <b>on quote</b>", recap_nodur: "Select at least one term for the projection.",
@@ -1139,10 +1222,23 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
   function discPack(Y) { var el = document.querySelector('.dpack[data-y="' + Y + '"]'); return el ? el.value : 15; }
 
   // ---------- pricing ----------
-  function setBase() { gv("base").value = GRILLES[grille()].licence[ltype()]; }
+  function setPrices() {
+    var lic = GRILLES[grille()].licence;
+    gv("stdPrice").value = lic.standard;
+    gv("customPrice").value = lic.custom;
+    gv("lightPrice").value = ratesFor(grille()).light || 0;
+  }
   function buildPricing() {
     var g = grille(), rates = ratesFor(g);
-    var p = { grille: g, currency: rates.currency, lang: deckLang(), base: parseFloat(gv("base").value) || 0, nbUsers: parseInt(gv("users").value) || 0, rates: rates };
+    var nbStd = parseInt(gv("nbStd").value) || 0, nbCustom = parseInt(gv("nbCustom").value) || 0;
+    var stdP = parseFloat(gv("stdPrice").value) || 0, custP = parseFloat(gv("customPrice").value) || 0;
+    var lightOn = gv("lightEnable").checked, nbLight = lightOn ? (parseInt(gv("nbLight").value) || 0) : 0;
+    var lightMonthly = parseFloat(gv("lightPrice").value); if (isNaN(lightMonthly)) lightMonthly = rates.light || 0;
+    var p = { grille: g, currency: rates.currency, lang: deckLang(), rates: rates };
+    p.std = { n: nbStd, price: stdP }; p.custom = { n: nbCustom, price: custP }; p.light = { n: nbLight, monthly: lightMonthly };
+    p.licenceAnnual = nbStd * stdP + nbCustom * custP;
+    p.lightAnnual = nbLight * lightMonthly * 12;
+    p.base = stdP || custP;
     var durs = durations(); p.durations = durs;
     var disc = {}; durs.forEach(function (Y) { if (Y > 1) disc[String(Y)] = clampLic(Y, discLic(Y)); }); p.discounts = disc;
     var hrs = gv("hours").value, packHours = null;
@@ -1167,8 +1263,10 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
     function chip(txt, warn) { out.push('<span class="chip' + (warn ? " warn" : "") + '">' + txt + "</span>"); }
     chip(GRILLES[p.grille].label + " · " + p.currency);
     chip(LANGNAME[deckLang()] || deckLang());
-    chip(t.c_licence(ltype()));
-    chip(t.c_users(p.nbUsers, money(p.base)), !p.nbUsers || !p.base);
+    var noUsers = (p.std.n + p.custom.n + p.light.n) === 0;
+    chip(t.c_std(p.std.n), p.std.n === 0 && noUsers);
+    chip(t.c_custom(p.custom.n), false);
+    if (p.light.n > 0) chip(t.c_light(p.light.n));
     chip(p.durations.length ? t.c_durations(p.durations.join(" & ")) : t.c_nodur, !p.durations.length);
     var hrs = gv("hours").value;
     chip(hrs === "none" ? t.c_nopack : (hrs === "custom" ? t.c_custompack : t.c_pack(hrs)), hrs === "none");
@@ -1186,19 +1284,22 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
     if (pn) html += '<div style="font-size:12.5px;margin-bottom:8px">' + t.recap_pack(pn.hours, money(pn.price), money(pn.full), pn.discount) + "</div>";
     else if (p.pack && p.pack.custom) html += '<div style="font-size:12.5px;margin-bottom:8px">' + t.recap_pack_custom + "</div>";
     if (!rows.length) { el.innerHTML = html + '<div class="hint">' + t.recap_nodur + "</div>"; return; }
-    var heads = [t.r_dur, t.r_lic]; if (hasImpl) heads.push(t.r_impl); if (oshA > 0) heads.push(t.r_osh); if (codeA > 0) heads.push(t.r_maint);
-    heads.push(t.r_total, t.r_year);
+    var lightA = p.lightAnnual || 0, hasLight = lightA > 0;
+    var heads = [t.r_dur, t.r_lic]; if (hasLight) heads.push(t.r_light); if (oshA > 0) heads.push(t.r_osh); if (codeA > 0) heads.push(t.r_maint);
+    heads.push(t.r_rec, t.r_proj);
     html += "<table class=\"recap\"><thead><tr>";
     heads.forEach(function (h) { html += "<th>" + h + "</th>"; });
     html += "</tr></thead><tbody>";
     rows.forEach(function (r) {
-      var total = r.coutTotal, cells = [t.r_yrow(r.Y), money(r.coutTotal) + (r.remisePct > 0 ? " (−" + r.remisePct.toFixed(0) + "%)" : "")];
-      if (hasImpl) { var d = packDiscFor(p.pack, r.Y), impl = pn.full * (1 - d / 100); cells.push(money(impl) + " (−" + d + "%)"); total += impl; }
-      if (oshA > 0) { cells.push(money(oshA * r.Y)); total += oshA * r.Y; }
-      if (codeA > 0) { cells.push(money(codeA * r.Y)); total += codeA * r.Y; }
-      cells.push(money(total)); cells.push(money(total / r.Y));
+      var rec = r.coutTotal, cells = [t.r_yrow(r.Y), money(r.coutTotal) + (r.remisePct > 0 ? " (−" + r.remisePct.toFixed(0) + "%)" : "")];
+      if (hasLight) { cells.push(money(lightA * r.Y)); rec += lightA * r.Y; }
+      if (oshA > 0) { cells.push(money(oshA * r.Y)); rec += oshA * r.Y; }
+      if (codeA > 0) { cells.push(money(codeA * r.Y)); rec += codeA * r.Y; }
+      var packY = 0;
+      if (pn) { var d = packDiscFor(p.pack, r.Y), dbase = p.pack.hours > 200 ? tiers[4].ex : pn.full; packY = dbase * (1 - d / 100) + (pn.full - dbase); }
+      cells.push(money(rec)); cells.push(money(rec + packY));
       html += "<tr>";
-      cells.forEach(function (cval, j) { html += "<td" + (j === cells.length - 2 ? ' class="tot"' : "") + ">" + cval + "</td>"; });
+      cells.forEach(function (cval, j) { html += "<td" + (j === cells.length - 1 ? ' class="tot"' : "") + ">" + cval + "</td>"; });
       html += "</tr>";
     });
     html += "</tbody></table>";
@@ -1271,7 +1372,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
   function saveVendeur() { try { localStorage.setItem(VKEY, JSON.stringify({ nom: gv("vnom").value, titre: gv("vtitre").value })); } catch (e) {} }
   function loadVendeur() { try { var v = JSON.parse(localStorage.getItem(VKEY) || "{}"); if (v.nom && !gv("vnom").value) gv("vnom").value = v.nom; if (v.titre && !gv("vtitre").value) gv("vtitre").value = v.titre; } catch (e) {} }
 
-  function resetDossier() { ["client", "notes", "users", "injson"].forEach(function (id) { gv(id).value = ""; }); status("", false); gv("client").focus(); refresh(); }
+  function resetDossier() { ["client", "notes", "nbStd", "nbCustom", "nbLight", "injson"].forEach(function (id) { if (gv(id)) gv(id).value = ""; }); status("", false); gv("client").focus(); refresh(); }
 
   // ---------- application de la langue d'interface ----------
   function applyUiLang() {
@@ -1291,14 +1392,14 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
 
   // ---------- init ----------
   function init() {
-    setBase();
+    setPrices();
     loadVendeur();
-    gv("grille").addEventListener("change", function () { setBase(); refresh(); });
-    gv("ltype").addEventListener("change", function () { setBase(); refresh(); });
-    ["lang", "client", "users", "base", "hours"].forEach(function (id) { gv(id).addEventListener("input", refresh); gv(id).addEventListener("change", refresh); });
+    gv("grille").addEventListener("change", function () { setPrices(); refresh(); });
+    ["lang", "client", "nbStd", "stdPrice", "nbCustom", "customPrice", "nbLight", "hours"].forEach(function (id) { gv(id).addEventListener("input", refresh); gv(id).addEventListener("change", refresh); });
     ["vnom", "vtitre"].forEach(function (id) { gv(id).addEventListener("input", saveVendeur); });
     gv("hours").addEventListener("change", function () { gv("customHoursWrap").hidden = this.value !== "custom"; });
     gv("customHours").addEventListener("input", refresh);
+    gv("lightEnable").addEventListener("change", function () { gv("lightFields").hidden = !this.checked; refresh(); });
     gv("oshEnable").addEventListener("change", function () { gv("oshFields").hidden = !this.checked; refresh(); });
     gv("codeEnable").addEventListener("change", function () { gv("codeFields").hidden = !this.checked; refresh(); });
     ["oshgb", "oshstaging", "oshworkers", "codelines"].forEach(function (id) { gv(id).addEventListener("input", refresh); });
