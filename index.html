@@ -383,6 +383,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       lightNote: "Light user : accès limité (RH, présences, PoS, lecture Knowledge, scan code-barres), sans accès aux applications métier (Ventes, Achats, Projets, Comptabilité).",
       lu_title: "Light users",
       lu_intro: "Une licence économique pour les collaborateurs qui n'ont pas besoin d'un accès complet à Odoo.",
+      lu_priceLabel: "TARIF MENSUEL", lu_perUser: "par utilisateur / par mois",
       lu_inclTitle: "Ce qui est inclus (accès limité)",
       lu_incl: ["RH & perso : profil, congés, notes de frais, cooptation, évaluations, présences", "Planning : consulter le planning, gérer sa feuille de travail", "Point de vente : se connecter comme employé en session PoS", "Knowledge : accès en lecture seule", "Logistique : scan de code-barres en entrepôt (sans création de produit ni gestion de stock)"],
       lu_profTitle: "Deux profils possibles",
@@ -472,6 +473,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       lightNote: "Light user: limited access (HR, attendance, PoS, read-only Knowledge, barcode scanning), no access to core business apps (Sales, Purchase, Projects, Accounting).",
       lu_title: "Light users",
       lu_intro: "A cost-effective licence for employees who don't need full access to Odoo.",
+      lu_priceLabel: "MONTHLY RATE", lu_perUser: "per user / per month",
       lu_inclTitle: "What's included (limited access)",
       lu_incl: ["HR & personal: profile, time off, expenses, referrals, appraisals, attendance", "Planning: view the planning, manage the worksheet", "Point of Sale: connect as employee in a PoS session", "Knowledge: read-only access", "Logistics: barcode scanning in the warehouse (no product creation or inventory management)"],
       lu_profTitle: "Two possible profiles",
@@ -561,6 +563,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       lightNote: "Light user: beperkte toegang (HR, aanwezigheden, PoS, alleen-lezen Knowledge, barcodescanning), geen toegang tot de kernapplicaties (Verkoop, Aankoop, Projecten, Boekhouding).",
       lu_title: "Light users",
       lu_intro: "Een voordelige licentie voor medewerkers die geen volledige toegang tot Odoo nodig hebben.",
+      lu_priceLabel: "MAANDTARIEF", lu_perUser: "per gebruiker / per maand",
       lu_inclTitle: "Wat is inbegrepen (beperkte toegang)",
       lu_incl: ["HR & persoonlijk: profiel, verlof, onkosten, referrals, evaluaties, aanwezigheden", "Planning: planning bekijken, werkblad beheren", "Kassa (PoS): verbinden als werknemer in een PoS-sessie", "Knowledge: alleen-lezen toegang", "Logistiek: barcodescanning in het magazijn (geen productcreatie of voorraadbeheer)"],
       lu_profTitle: "Twee mogelijke profielen",
@@ -888,27 +891,33 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
     })();
 
     // 11 bis. Light users (uniquement si des light users sont renseignes)
+    // Meme mise en page que la slide Licences : carte prix a gauche (encart
+    // restriction sous le prix), liste "ce qui est inclus" a droite.
     (function () {
       if (!(parseFloat(pricing.lightAnnual) > 0)) return;
       const s = S(), h = mkHelpers(pptx, s, ASSETS);
-      h.header(t.lu_title, "teal");
-      h.txt(t.lu_intro, MX, 1.72, W - 2 * MX, 0.5, { size: 14, color: C.gray, italic: true });
-      const colW = (W - 2 * MX - 0.4) / 2, lx = MX, rx = MX + colW + 0.4;
-      h.txt(t.lu_inclTitle, lx, 2.32, colW, 0.35, { size: 15, color: C.ink, bold: true });
-      t.lu_incl.forEach(function (it, i) {
-        const y = 2.82 + i * 0.75;
-        h.checkBadge(lx, y, 0.4);
-        h.txt(it, lx + 0.58, y - 0.06, colW - 0.68, 0.72, { size: 12, color: C.gray });
+      h.header(t.lu_title, "yellow");
+      const cardx = MX, cardw = 4.9;
+      h.card(cardx, 1.9, cardw, 4.55, C.card, null, 0.04);
+      h.txt(t.lu_priceLabel, cardx + 0.4, 2.2, cardw - 0.8, 0.35, { size: 12, color: C.gray, bold: true, spacing: 2 });
+      const monthly = (pricing.light && pricing.light.monthly) || (pricing.rates || {}).light || 0;
+      h.txt(eur(monthly), cardx + 0.4, 2.6, cardw - 0.8, 0.9, { size: 40, color: C.ink, bold: true });
+      h.txt(t.lu_perUser, cardx + 0.4, 3.5, cardw - 0.8, 0.4, { size: 13, color: C.gray });
+      // encart restriction sous le prix
+      const by = 4.05;
+      h.shape(h.RR, cardx + 0.4, by, cardw - 0.8, 2.1, { fill: C.pink, line: C.coral, radius: 0.1 });
+      h.runs([{ text: t.lu_restrictB, bold: true, color: C.darkred, size: 13 }, { text: t.lu_restrict, color: C.ink, size: 12.5 }], cardx + 0.6, by, cardw - 1.2, 2.1, { anchor: "middle", lineMult: 1.12 });
+      // colonne droite : ce qui est inclus
+      const rx = cardx + cardw + 0.55, rw = W - MX - rx;
+      h.txt(t.lu_inclTitle, rx, 1.9, rw, 0.4, { size: 17, color: C.ink, bold: true });
+      const iy = 2.5, ih = 0.9;
+      t.lu_incl.forEach(function (m, i) {
+        const y = iy + i * ih, idx = m.indexOf(": ");
+        const title = idx >= 0 ? m.slice(0, idx) : m, desc = idx >= 0 ? m.slice(idx + 2) : "";
+        h.txt("→", rx, y - 0.02, 0.42, 0.4, { size: 17, color: C.teal, bold: true });
+        h.txt(title, rx + 0.5, y, rw - 0.5, 0.32, { size: 13.5, color: C.ink, bold: true });
+        if (desc) h.txt(desc, rx + 0.5, y + 0.3, rw - 0.5, 0.55, { size: 11.5, color: C.gray });
       });
-      h.txt(t.lu_profTitle, rx, 2.32, colW, 0.35, { size: 15, color: C.ink, bold: true });
-      t.lu_prof.forEach(function (it, i) {
-        const y = 2.86 + i * 0.9;
-        h.numBadge(rx, y, 0.44, i + 1, C.blue);
-        h.txt(it, rx + 0.6, y - 0.04, colW - 0.7, 0.85, { size: 12.5, color: C.ink });
-      });
-      const by = 4.95;
-      h.shape(h.RR, rx, by, colW, 1.55, { fill: C.pink, line: C.coral, radius: 0.08 });
-      h.runs([{ text: t.lu_restrictB, bold: true, color: C.darkred, size: 13 }, { text: t.lu_restrict, color: C.ink, size: 12.5 }], rx + 0.3, by, colW - 0.6, 1.55, { anchor: "middle" });
     })();
 
     // 12. Pack
