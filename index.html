@@ -993,37 +993,50 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
           return { text: v, options: { fill: { color: i % 2 ? C.card : C.white }, color: j === reccol ? C.darkyellow : C.ink, bold: j === reccol, fontFace: FONT, fontSize: ncols >= 5 ? 11.5 : 12.5, align: j === 0 ? "left" : "right", valign: "middle", margin: 4 } };
         }));
       });
-      const nrows = rows.length + 1, tY = 1.9;
-      const rowH = Math.min(0.48, 1.8 / nrows), tableH = rowH * nrows;
+      const nrows = rows.length + 1, tY = 1.88;
+      const rowH = Math.min(0.46, 1.72 / nrows), tableH = rowH * nrows;
       s.addTable(trows, { x: MX, y: tY, w: avail, colW: colW, rowH: rowH, border: { type: "none" }, autoPage: false });
-      let y = tY + tableH + 0.16;
-      // --- Encart 2 : pack d'implementation (ponctuel) + remises degressives si variables. ---
+      let y = tY + tableH + 0.14;
+      // --- Encarts : Implementation (moitie gauche) + Total projet en vert (moitie droite). ---
+      const mcw = (avail - 0.3) / 2, rxc = MX + mcw + 0.3;
+      function recFor(r) { return r.coutTotal + lightA * r.Y + oshA * r.Y + codeA * r.Y; }
+      const info = hasImpl ? packNet(pack, tiers) : null;
+      const varies = hasImpl && rows.map(function (r) { return packDiscFor(pack, r.Y); }).some(function (d, i, a) { return d !== a[0]; });
+      const nd = rows.length;
+      const packNeed = !hasImpl ? 0 : (varies ? 0.70 + nd * 0.25 + 0.1 : 1.3);
+      const totalNeed = 0.56 + nd * 0.34 + 0.12;
+      const cardH = Math.max(1.4, packNeed, totalNeed);
       if (hasImpl) {
-        const info = packNet(pack, tiers);
-        const discs = rows.map(function (r) { return packDiscFor(pack, r.Y); });
-        const varies = discs.some(function (d) { return d !== discs[0]; });
-        const cardH = 1.15;
-        h.card(MX, y, avail, cardH, C.card, C.yellow, 0.04);
-        h.txt(t.implTitle, MX + 0.35, y + 0.16, avail - 0.7, 0.3, { size: 13, color: C.darkyellow, bold: true });
+        h.card(MX, y, mcw, cardH, C.card, C.yellow, 0.04);
+        h.txt(t.implTitle, MX + 0.3, y + 0.16, mcw - 0.6, 0.3, { size: 12.5, color: C.darkyellow, bold: true });
         if (varies) {
-          h.txt(info.hours + " h · " + t.implOnce, MX + 0.35, y + 0.46, avail - 0.7, 0.3, { size: 12, color: C.gray });
-          const chips = rows.map(function (r) { const py = packNetPrice(pack, r.Y, tiers); return t.yLabel(r.Y, r.Y > 1 ? "s" : "") + " : " + eur(py.price) + "  (−" + py.discount.toFixed(0) + "%)"; });
-          h.txt(chips.join("      "), MX + 0.35, y + 0.76, avail - 0.7, 0.35, { size: 12.5, color: C.ink, bold: true });
+          h.txt(info.hours + " h · " + t.implOnce, MX + 0.3, y + 0.44, mcw - 0.6, 0.28, { size: 10.5, color: C.gray });
+          rows.forEach(function (r, k) { const py = packNetPrice(pack, r.Y, tiers); h.txt(t.yLabel(r.Y, r.Y > 1 ? "s" : "") + " : " + eur(py.price) + "  (−" + py.discount.toFixed(0) + "%)", MX + 0.3, y + 0.70 + k * 0.25, mcw - 0.6, 0.26, { size: 11.5, color: C.ink, bold: true }); });
         } else {
-          h.txt(eur(info.price) + "   ·   " + info.hours + " h · " + t.implOnce, MX + 0.35, y + 0.48, avail - 0.7, 0.4, { size: 17, color: C.ink, bold: true });
-          h.txt(t.fullPrice(eur(info.full)) + "   ·   −" + info.discount.toFixed(0) + "%", MX + 0.35, y + 0.86, avail - 0.7, 0.3, { size: 11, color: C.gray, italic: true });
+          h.txt(eur(info.price) + "   ·   " + info.hours + " h", MX + 0.3, y + 0.5, mcw - 0.6, 0.4, { size: 18, color: C.ink, bold: true });
+          h.txt(t.implOnce + " · " + t.fullPrice(eur(info.full)) + "  ·  −" + info.discount.toFixed(0) + "%", MX + 0.3, y + 0.94, mcw - 0.6, 0.3, { size: 10.5, color: C.gray, italic: true });
         }
-        y += cardH + 0.12;
       }
+      (function () {
+        const x = hasImpl ? rxc : MX, w = hasImpl ? mcw : avail;
+        h.card(x, y, w, cardH, C.card, C.teal, 0.04);
+        h.txt(t.hTotalProj, x + 0.3, y + 0.16, w - 0.6, 0.3, { size: 12.5, color: C.darkteal, bold: true });
+        rows.forEach(function (r, k) {
+          const packY = hasImpl ? packNetPrice(pack, r.Y, tiers).price : 0, tot = recFor(r) + packY, ly = y + 0.54 + k * 0.34;
+          h.txt(t.yLabel(r.Y, r.Y > 1 ? "s" : ""), x + 0.3, ly + 0.06, 1.4, 0.3, { size: 12.5, color: C.gray });
+          h.txt(eur(tot), x + 0.3, ly, w - 0.6, 0.34, { size: 16, color: C.ink, bold: true, align: "right" });
+        });
+      })();
+      y += cardH + 0.12;
       // --- Texte grise : -20 % an 1 (+ remise supplementaire si appliquee, sans mention de duree). ---
       const hasExtraLic = rows.some(function (r) { return r.remisePct > 0; });
       const cap = [t.capLic + (hasExtraLic ? " · " + t.capLicExtra : "")]; if (hasOsh) cap.push(t.capOsh);
       h.txt(cap.join(" · ") + ".", MX, y, avail, 0.4, { size: 11, color: C.gray, italic: true });
-      y += 0.26;
-      if (hasCode) { h.txt(t.codeNote(eur((pricing.rates || {}).codePer100 / 12)), MX, y, avail, 0.4, { size: 10, color: C.gray, italic: true }); y += 0.24; }
-      if (hasLight) { h.txt(t.lightNote, MX, y, avail, 0.4, { size: 10, color: C.gray, italic: true }); y += 0.24; }
+      y += 0.24;
+      if (hasCode) { h.txt(t.codeNote(eur((pricing.rates || {}).codePer100 / 12)), MX, y, avail, 0.4, { size: 9.5, color: C.gray, italic: true }); y += 0.22; }
+      if (hasLight) { h.txt(t.lightNote, MX, y, avail, 0.4, { size: 9.5, color: C.gray, italic: true }); y += 0.22; }
       // --- Bloc bas : l'interet du pluriannuel (prix gele + hausse plafonnee a 7 %). ---
-      const by = Math.max(y + 0.06, 5.45), bh = Math.min(1.35, 7.25 - by);
+      const by = Math.max(y + 0.06, 5.4), bh = Math.min(1.4, 7.3 - by);
       h.card(MX, by, avail, bh, C.card, C.yellow, 0.04);
       h.txt(t.multiTitle, MX + 0.4, by + 0.16, avail - 0.8, 0.35, { size: 15, color: C.darkyellow, bold: true });
       const aw = (avail - 0.8 - 0.5) / 2;
