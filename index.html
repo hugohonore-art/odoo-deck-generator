@@ -367,6 +367,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
         ["Accès API & Odoo Studio", "Intégration avec vos outils existants et paramétrage en autonomie, sans dépendance."],
         ["Environnement multi-société", "Gérez plusieurs entités et les flux inter-sociétés depuis une seule plateforme."],
       ],
+      agenticAI: ["Agentic AI", "agents IA natifs intégrés à vos workflows"],
       packTitle: "Service d'implémentation & formations",
       yourPack: "VOTRE PACK", hours: (h) => h + " heures", onQuote: "Sur devis",
       packSub: "Accompagnement & formation des équipes",
@@ -380,6 +381,8 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       hDur: "Durée d'engagement", hLic: "Licences (période)", hImpl: "Implémentation",
       hOsh: "Hébergement Odoo.sh", hCode: "Maintenance code*", hTotal: "Total projet", hAnnual: "Équivalent annuel",
       hTotalRec: "Total récurrent", hTotalProj: "Total projet", hLight: "Light users",
+      hRecur: "Frais récurrents (sur la durée)", hPack: "Pack (ponctuel)", hPackDisc: "Remise pack",
+      adv: [["Prix gelé", "votre tarif licences est bloqué pendant toute la durée du contrat."], ["Hausse maîtrisée", "au renouvellement, toute hausse est plafonnée à +7 % par année de contrat."]],
       lightNote: "Light user : accès limité (RH, présences, PoS, lecture Knowledge, scan code-barres), sans accès aux applications métier (Ventes, Achats, Projets, Comptabilité).",
       lu_title: "Light users",
       lu_intro: "Une licence économique pour les collaborateurs qui n'ont pas besoin d'un accès complet à Odoo.",
@@ -392,8 +395,8 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       implTitle: "Implémentation (Success Pack)", implOnce: "facturée une fois",
       codeNote: (m) => "* Maintenance code : " + m + "/mois par 100 lignes, à titre indicatif, variable selon l'estimation et la mise en place réelle.",
       yLabel: (y, p) => y + " an" + p,
-      capLic: "Licences : −20 % an 1 + remise pluriannuelle",
-      capImpl: "Implémentation : pack remisé selon la durée (15 % par défaut, facturé une fois)",
+      capLic: "Licences : −20 % la première année (nouveau client)",
+      capImpl: "Implémentation : facturée une fois", capLicExtra: "remise commerciale supplémentaire incluse",
       capOsh: "Hébergement Odoo.sh = coût annuel × durée",
       capCode: (r) => "Maintenance code = " + r + "/an par 100 lignes × durée",
       capAnnual: "Équivalent annuel = total projet / durée",
@@ -457,6 +460,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
         ["API access & Odoo Studio", "Integration with your existing tools and self-service configuration, no dependency."],
         ["Multi-company environment", "Manage several entities and inter-company flows from one platform."],
       ],
+      agenticAI: ["Agentic AI", "native AI agents built into your workflows"],
       packTitle: "Implementation service & training",
       yourPack: "YOUR PACK", hours: (h) => h + " hours", onQuote: "On quote",
       packSub: "Team support & training",
@@ -470,6 +474,8 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       hDur: "Commitment term", hLic: "Licences (period)", hImpl: "Implementation",
       hOsh: "Odoo.sh hosting", hCode: "Code maintenance*", hTotal: "Project total", hAnnual: "Annual equivalent",
       hTotalRec: "Recurring total", hTotalProj: "Project total", hLight: "Light users",
+      hRecur: "Recurring fees (over term)", hPack: "Pack (one-time)", hPackDisc: "Pack discount",
+      adv: [["Frozen price", "your licence rate is locked for the whole contract term."], ["Capped increase", "at renewal, any increase is capped at +7% per contract year."]],
       lightNote: "Light user: limited access (HR, attendance, PoS, read-only Knowledge, barcode scanning), no access to core business apps (Sales, Purchase, Projects, Accounting).",
       lu_title: "Light users",
       lu_intro: "A cost-effective licence for employees who don't need full access to Odoo.",
@@ -482,8 +488,8 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       implTitle: "Implementation (Success Pack)", implOnce: "billed once",
       codeNote: (m) => "* Code maintenance: " + m + "/month per 100 lines, indicative, may vary with the estimate and the actual setup.",
       yLabel: (y, p) => y + " year" + p,
-      capLic: "Licences: −20% year 1 + multi-year discount",
-      capImpl: "Implementation: pack discounted by term (15% default, billed once)",
+      capLic: "Licences: −20% in year 1 (new customer)",
+      capImpl: "Implementation: billed once", capLicExtra: "additional commercial discount included",
       capOsh: "Odoo.sh hosting = annual cost × term",
       capCode: (r) => "Code maintenance = " + r + "/yr per 100 lines × term",
       capAnnual: "Annual equivalent = project total / term",
@@ -547,6 +553,7 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
         ["API-toegang & Odoo Studio", "Integratie met uw bestaande tools en zelf configureren, zonder afhankelijkheid."],
         ["Multi-company omgeving", "Beheer meerdere entiteiten en intercompany-flows vanaf één platform."],
       ],
+      agenticAI: ["Agentic AI", "native AI-agents geïntegreerd in uw workflows"],
       packTitle: "Implementatiedienst & opleidingen",
       yourPack: "UW PACK", hours: (h) => h + " uur", onQuote: "Op offerte",
       packSub: "Begeleiding & opleiding van de teams",
@@ -560,6 +567,8 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       hDur: "Looptijd", hLic: "Licenties (periode)", hImpl: "Implementatie",
       hOsh: "Odoo.sh-hosting", hCode: "Code-onderhoud*", hTotal: "Totaal project", hAnnual: "Jaarlijks equivalent",
       hTotalRec: "Terugkerend totaal", hTotalProj: "Totaal project", hLight: "Light users",
+      hRecur: "Terugkerende kosten (looptijd)", hPack: "Pack (eenmalig)", hPackDisc: "Pack-korting",
+      adv: [["Vaste prijs", "uw licentietarief ligt vast voor de hele looptijd van het contract."], ["Beperkte stijging", "bij verlenging is elke stijging beperkt tot +7% per contractjaar."]],
       lightNote: "Light user: beperkte toegang (HR, aanwezigheden, PoS, alleen-lezen Knowledge, barcodescanning), geen toegang tot de kernapplicaties (Verkoop, Aankoop, Projecten, Boekhouding).",
       lu_title: "Light users",
       lu_intro: "Een voordelige licentie voor medewerkers die geen volledige toegang tot Odoo nodig hebben.",
@@ -572,8 +581,8 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       implTitle: "Implementatie (Success Pack)", implOnce: "eenmalig gefactureerd",
       codeNote: (m) => "* Code-onderhoud: " + m + "/maand per 100 regels, indicatief, kan variëren volgens de raming en de effectieve implementatie.",
       yLabel: (y, p) => y + " jaar",
-      capLic: "Licenties: −20% jaar 1 + meerjarenkorting",
-      capImpl: "Implementatie: pack met korting volgens looptijd (15% standaard, eenmalig gefactureerd)",
+      capLic: "Licenties: −20% in jaar 1 (nieuwe klant)",
+      capImpl: "Implementatie: eenmalig gefactureerd", capLicExtra: "extra commerciële korting inbegrepen",
       capOsh: "Odoo.sh-hosting = jaarkost × looptijd",
       capCode: (r) => "Code-onderhoud = " + r + "/jaar per 100 regels × looptijd",
       capAnnual: "Jaarlijks equivalent = totaal project / looptijd",
@@ -728,11 +737,15 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       const s = S(), h = mkHelpers(pptx, s, ASSETS);
       h.header(t.needTitle(data.client || ""), "teal");
       h.txt(data.couvrons || "", MX, 1.72, W - 2 * MX, 0.5, { size: 14, color: C.gray, italic: true });
-      const lines = (data.pitch || "").split("\n").filter(Boolean).slice(0, 6);
+      // On liste les besoins identifies en qualification (fallback : pitch).
+      const needs = (data.besoins && data.besoins.length)
+        ? data.besoins.slice(0, 6).map(function (b) { return { title: b.title || "", desc: b.desc || "" }; })
+        : (data.pitch || "").split("\n").filter(Boolean).slice(0, 6).map(function (l) { return { title: l, desc: "" }; });
       let by = 2.35;
-      lines.forEach(function (ln) {
+      needs.forEach(function (nd) {
         h.circle(MX + 0.02, by + 0.05, 0.16, C.teal);
-        h.txt(ln, MX + 0.42, by - 0.05, W - 2 * MX - 0.5, 0.4, { size: 14, color: C.ink, anchor: "middle" });
+        if (nd.desc) h.runs([{ text: nd.title + " : ", bold: true, color: C.ink, size: 14 }, { text: nd.desc, color: C.gray, size: 14 }], MX + 0.42, by - 0.05, W - 2 * MX - 0.5, 0.4, { anchor: "middle" });
+        else h.txt(nd.title, MX + 0.42, by - 0.05, W - 2 * MX - 0.5, 0.4, { size: 14, color: C.ink, anchor: "middle" });
         by += 0.44;
       });
       const stats = (data.stats || []).slice(0, 4), n = stats.length || 1;
@@ -881,12 +894,15 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       });
       const rx = cardx + cardw + 0.55, rw = W - MX - rx;
       h.txt(t.licInclTitle, rx, 1.9, rw, 0.4, { size: 17, color: C.ink, bold: true });
-      const iy = 2.5, ih = 1.02;
-      t.licIncl.forEach(function (m, i) {
+      const incl = t.licIncl.slice();
+      const isCustom = (pricing.custom && pricing.custom.n > 0) || pricing.ltype === "custom";
+      if (isCustom) incl.push(t.agenticAI);
+      const iy = 2.45, ih = incl.length >= 5 ? 0.9 : 1.02;
+      incl.forEach(function (m, i) {
         const y = iy + i * ih;
         h.txt("→", rx, y - 0.02, 0.42, 0.4, { size: 17, color: C.teal, bold: true });
         h.txt(m[0], rx + 0.5, y, rw - 0.5, 0.35, { size: 14, color: C.ink, bold: true });
-        h.txt(m[1], rx + 0.5, y + 0.34, rw - 0.5, 0.62, { size: 12, color: C.gray });
+        h.txt(m[1], rx + 0.5, y + 0.34, rw - 0.5, 0.52, { size: 12, color: C.gray });
       });
     })();
 
@@ -953,59 +969,68 @@ if (typeof module !== "undefined") module.exports = { GRILLES, CAPS, ratesFor };
       const durTxt = rows.map(function (r) { return r.Y; }).join(" & ");
       const plural = rows.some(function (r) { return r.Y > 1; }) ? "s" : "";
       h.header(t.projTitle(durTxt, plural), "yellow");
-      const oshA = oshAnnual(pricing), hasOsh = oshA > 0, codeA = codeAnnual(pricing), hasCode = codeA > 0;
-      const lightA = parseFloat(pricing.lightAnnual) || 0, hasLight = lightA > 0;
-      const info = hasImpl ? packNet(pack, tiers) : null;
-      // Tableau = recurrent + total projet ; le pack (une fois) est sorti dans une carte.
-      const headers = [t.hDur, t.hLic]; if (hasLight) headers.push(t.hLight); if (hasOsh) headers.push(t.hOsh); if (hasCode) headers.push(t.hCode);
-      headers.push(t.hTotalRec, t.hTotalProj);
-      const ncols = headers.length, avail = W - 2 * MX;
-      const w0 = ncols >= 6 ? 1.9 : 2.2, rest = (avail - w0) / (ncols - 1), colW = [w0]; for (let k = 1; k < ncols; k++) colW.push(rest);
-      const hsize = ncols >= 6 ? 10 : 11, vsize = ncols >= 6 ? 11 : 12;
-      const projcol = ncols - 1, reccol = ncols - 2;
+      const oshA = oshAnnual(pricing), codeA = codeAnnual(pricing);
+      const lightA = parseFloat(pricing.lightAnnual) || 0, hasLight = lightA > 0, hasCode = codeA > 0, hasOsh = oshA > 0;
+      const avail = W - 2 * MX;
+      // --- Tableau 1 : frais recurrents (cumules sur la duree). Colonnes conditionnelles. ---
+      h.txt(t.hRecur, MX, 1.55, avail, 0.3, { size: 13, color: C.darkyellow, bold: true });
+      const headers = [t.hDur, t.hLic]; if (hasLight) headers.push(t.hLight); if (hasOsh) headers.push(t.hOsh); if (hasCode) headers.push(t.hCode); headers.push(t.hTotalRec);
+      const ncols = headers.length;
+      const w0 = 2.2, rest = (avail - w0) / (ncols - 1), colW = [w0]; for (let k = 1; k < ncols; k++) colW.push(rest);
+      const reccol = ncols - 1;
       const trows = [];
       trows.push(headers.map(function (htxt, j) {
-        return { text: htxt, options: { fill: { color: C.line }, color: C.ink, bold: true, fontFace: FONT, fontSize: hsize, align: j === 0 ? "left" : "right", valign: "middle", margin: 3 } };
+        return { text: htxt, options: { fill: { color: C.line }, color: C.ink, bold: true, fontFace: FONT, fontSize: ncols >= 5 ? 10.5 : 11, align: j === 0 ? "left" : "right", valign: "middle", margin: 4 } };
       }));
       rows.forEach(function (r, i) {
-        const licCell = eur(r.coutTotal) + (r.remisePct > 0 ? "  (−" + r.remisePct.toFixed(0) + "%)" : "");
-        const vals = [t.yLabel(r.Y, r.Y > 1 ? "s" : ""), licCell];
+        const vals = [t.yLabel(r.Y, r.Y > 1 ? "s" : ""), eur(r.coutTotal)];
         let rec = r.coutTotal;
         if (hasLight) { vals.push(eur(lightA * r.Y)); rec += lightA * r.Y; }
         if (hasOsh) { vals.push(eur(oshA * r.Y)); rec += oshA * r.Y; }
         if (hasCode) { vals.push(eur(codeA * r.Y)); rec += codeA * r.Y; }
-        const packY = info ? packNetPrice(pack, r.Y, tiers).price : 0;
-        vals.push(eur(rec)); vals.push(eur(rec + packY));
+        vals.push(eur(rec));
         trows.push(vals.map(function (v, j) {
-          return { text: v, options: { fill: { color: i % 2 ? C.card : C.white }, color: j === projcol ? C.darkyellow : C.ink, bold: j === projcol || j === reccol, fontFace: FONT, fontSize: vsize, align: j === 0 ? "left" : "right", valign: "middle", margin: 3 } };
+          return { text: v, options: { fill: { color: i % 2 ? C.card : C.white }, color: j === reccol ? C.darkyellow : C.ink, bold: j === reccol, fontFace: FONT, fontSize: ncols >= 5 ? 11.5 : 12.5, align: j === 0 ? "left" : "right", valign: "middle", margin: 4 } };
         }));
       });
-      const nrows = rows.length + 1;
-      const rowH = Math.min(0.58, 2.3 / nrows), tableH = rowH * nrows;
-      s.addTable(trows, { x: MX, y: 1.95, w: avail, colW: colW, rowH: rowH, border: { type: "none" }, autoPage: false });
-      const cap = [t.capLic]; if (hasImpl) cap.push(t.capImpl); if (hasOsh) cap.push(t.capOsh);
-      const capY = 1.95 + tableH + 0.06;
-      h.txt(cap.join(" · ") + ".", MX, capY, W - 2 * MX, 0.4, { size: 11, color: C.gray, italic: true });
-      let noteY = capY + 0.34;
-      if (hasCode) { h.txt(t.codeNote(eur((pricing.rates || {}).codePer100 / 12)), MX, noteY, W - 2 * MX, 0.4, { size: 10.5, color: C.gray, italic: true }); noteY += 0.30; }
-      if (hasLight) { h.txt(t.lightNote, MX, noteY, W - 2 * MX, 0.4, { size: 10.5, color: C.gray, italic: true }); noteY += 0.30; }
-      // Cartes : Implementation (une fois) + Prix gele
-      const cardsY = noteY + 0.14, cardH = Math.max(1.2, Math.min(1.95, 7.15 - cardsY));
-      const cards = [];
-      if (info) cards.push("impl");
-      cards.push("frozen");
-      const nc = cards.length, mcw = nc === 2 ? (W - 2 * MX - 0.3) / 2 : (W - 2 * MX);
-      cards.forEach(function (kind, i) {
-        const x = MX + i * (mcw + 0.3); h.card(x, cardsY, mcw, cardH);
-        if (kind === "impl") {
-          h.txt(t.implTitle, x + 0.3, cardsY + 0.22, mcw - 0.6, 0.35, { size: 13, color: C.darkyellow, bold: true });
-          h.txt(eur(info.price), x + 0.3, cardsY + 0.54, mcw - 0.6, 0.55, { size: 23, color: C.ink, bold: true });
-          h.txt(info.hours + " h · " + t.implOnce, x + 0.3, cardsY + 1.10, mcw - 0.6, 0.3, { size: 12, color: C.gray });
-          h.txt(t.fullPrice(eur(info.full)) + "  ·  −" + info.discount.toFixed(0) + "%", x + 0.3, cardsY + 1.40, mcw - 0.6, 0.3, { size: 11, color: C.gray, italic: true });
+      const nrows = rows.length + 1, tY = 1.9;
+      const rowH = Math.min(0.48, 1.8 / nrows), tableH = rowH * nrows;
+      s.addTable(trows, { x: MX, y: tY, w: avail, colW: colW, rowH: rowH, border: { type: "none" }, autoPage: false });
+      let y = tY + tableH + 0.16;
+      // --- Encart 2 : pack d'implementation (ponctuel) + remises degressives si variables. ---
+      if (hasImpl) {
+        const info = packNet(pack, tiers);
+        const discs = rows.map(function (r) { return packDiscFor(pack, r.Y); });
+        const varies = discs.some(function (d) { return d !== discs[0]; });
+        const cardH = 1.15;
+        h.card(MX, y, avail, cardH, C.card, C.yellow, 0.04);
+        h.txt(t.implTitle, MX + 0.35, y + 0.16, avail - 0.7, 0.3, { size: 13, color: C.darkyellow, bold: true });
+        if (varies) {
+          h.txt(info.hours + " h · " + t.implOnce, MX + 0.35, y + 0.46, avail - 0.7, 0.3, { size: 12, color: C.gray });
+          const chips = rows.map(function (r) { const py = packNetPrice(pack, r.Y, tiers); return t.yLabel(r.Y, r.Y > 1 ? "s" : "") + " : " + eur(py.price) + "  (−" + py.discount.toFixed(0) + "%)"; });
+          h.txt(chips.join("      "), MX + 0.35, y + 0.76, avail - 0.7, 0.35, { size: 12.5, color: C.ink, bold: true });
         } else {
-          h.txt(t.frozen[0], x + 0.3, cardsY + 0.24, mcw - 0.6, 0.4, { size: 16, color: C.ink, bold: true });
-          h.txt(t.frozen[1], x + 0.3, cardsY + 0.72, mcw - 0.6, cardH - 0.85, { size: 12.5, color: C.gray });
+          h.txt(eur(info.price) + "   ·   " + info.hours + " h · " + t.implOnce, MX + 0.35, y + 0.48, avail - 0.7, 0.4, { size: 17, color: C.ink, bold: true });
+          h.txt(t.fullPrice(eur(info.full)) + "   ·   −" + info.discount.toFixed(0) + "%", MX + 0.35, y + 0.86, avail - 0.7, 0.3, { size: 11, color: C.gray, italic: true });
         }
+        y += cardH + 0.12;
+      }
+      // --- Texte grise : -20 % an 1 (+ remise supplementaire si appliquee, sans mention de duree). ---
+      const hasExtraLic = rows.some(function (r) { return r.remisePct > 0; });
+      const cap = [t.capLic + (hasExtraLic ? " · " + t.capLicExtra : "")]; if (hasOsh) cap.push(t.capOsh);
+      h.txt(cap.join(" · ") + ".", MX, y, avail, 0.4, { size: 11, color: C.gray, italic: true });
+      y += 0.26;
+      if (hasCode) { h.txt(t.codeNote(eur((pricing.rates || {}).codePer100 / 12)), MX, y, avail, 0.4, { size: 10, color: C.gray, italic: true }); y += 0.24; }
+      if (hasLight) { h.txt(t.lightNote, MX, y, avail, 0.4, { size: 10, color: C.gray, italic: true }); y += 0.24; }
+      // --- Bloc bas : l'interet du pluriannuel (prix gele + hausse plafonnee a 7 %). ---
+      const by = Math.max(y + 0.06, 5.45), bh = Math.min(1.35, 7.25 - by);
+      h.card(MX, by, avail, bh, C.card, C.yellow, 0.04);
+      h.txt(t.multiTitle, MX + 0.4, by + 0.16, avail - 0.8, 0.35, { size: 15, color: C.darkyellow, bold: true });
+      const aw = (avail - 0.8 - 0.5) / 2;
+      t.adv.forEach(function (a, i) {
+        const ax = MX + 0.4 + i * (aw + 0.5), ay = by + 0.6;
+        h.circle(ax + 0.02, ay + 0.06, 0.16, C.yellow);
+        h.runs([{ text: a[0] + " : ", bold: true, color: C.ink, size: 13.5 }, { text: a[1], color: C.gray, size: 12.5 }], ax + 0.42, ay - 0.04, aw - 0.42, bh - 0.72, { anchor: "middle" });
       });
     })();
 
